@@ -29,7 +29,6 @@ export function activate(context: ExtensionContext) {
   });
 
   commands.registerCommand("commaned-runner.codelensAction", (args: any) => {
-    window.showInformationMessage(`CodeLens action clicked with args=${args}`);
     Terminal.run(args);
   });
 }

@@ -39,10 +39,12 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           new RegExp(this.regex)
         );
         if (range) {
-          const run = matches[0].match(/`(.*)`/)![1];
+          const run: string = matches[0].match(/`(.*)`/)![1];
+          const runText: string =
+            run.length > 15 ? `${run.substring(0, 15)}...` : run;
           const command: vscode.Command = {
-            title: `Run \`${run}\` in the terminal`,
-            tooltip: run,
+            title: `Run \`${runText}\` in the terminal`,
+            tooltip: `Run \`${run}\``,
             command: "commaned-runner.codelensAction",
             arguments: [run, false],
           };
