@@ -10,7 +10,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     ._onDidChangeCodeLenses.event;
 
   constructor() {
-    this.regex = /(.+)/g;
+    this.regex = /run `(.*?)`/g;
 
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire();
@@ -39,31 +39,18 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           new RegExp(this.regex)
         );
         if (range) {
-          this.codeLenses.push(new vscode.CodeLens(range));
+          const run = matches[0].match(/`(.*)`/)![1];
+          const command: vscode.Command = {
+            title: `Run \`${run}\` in the terminal`,
+            tooltip: run,
+            command: "commaned-runner.codelensAction",
+            arguments: [run, false],
+          };
+          this.codeLenses.push(new vscode.CodeLens(range, command));
         }
       }
       return this.codeLenses;
     }
     return [];
-  }
-
-  public resolveCodeLens(
-    codeLens: vscode.CodeLens,
-    token: vscode.CancellationToken
-  ) {
-    if (
-      vscode.workspace
-        .getConfiguration("commaned-runner")
-        .get("enableCodeLens", true)
-    ) {
-      codeLens.command = {
-        title: "Codelens provided by sample extension",
-        tooltip: "Tooltip provided by sample extension",
-        command: "commaned-runner.codelensAction",
-        arguments: ["ls", false],
-      };
-      return codeLens;
-    }
-    return null;
   }
 }
