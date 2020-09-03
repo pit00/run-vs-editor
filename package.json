@@ -10,17 +10,31 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:commaned-runner.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "commaned-runner.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
+				{
+						"title": "Enable CodeLens",
+						"command": "commaned-runner.enableCodeLens",
+						"category": "CodeLens Sample"
+				},
+				{
+						"title": "Disable Codelens",
+						"command": "commaned-runner.disableCodeLens",
+						"category": "CodeLens Sample"
+				}
+		],
+		"configuration": {
+				"properties": {
+						"commaned-runner.enableCodeLens": {
+								"type": "boolean",
+								"default": true
+						}
+				}
+		}
+},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
