@@ -10,7 +10,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     ._onDidChangeCodeLenses.event;
 
   constructor() {
-    this.regex = /run `(.*?)`/g;
+    this.regex = /run `(.*?)`/ig;
 
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire();
