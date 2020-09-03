@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 export class Terminal {
-  static termName: string = "run-in-terminal";
+  static termName: string = "Command Runner";
   static term: vscode.Terminal | undefined;
 
   static _term() {
@@ -20,7 +20,6 @@ export class Terminal {
   }
 
   static run(command: string) {
-    console.log(`Running ${command} in ${JSON.stringify(Terminal._term())}`);
     Terminal._term().sendText(command, true);
   }
 
