@@ -16,14 +16,14 @@
 	"contributes": {
 		"commands": [
 				{
-						"title": "Enable CodeLens",
+						"title": "Enable",
 						"command": "commaned-runner.enableCodeLens",
-						"category": "CodeLens Sample"
+						"category": "Command Runner"
 				},
 				{
-						"title": "Disable Codelens",
+						"title": "Disable",
 						"command": "commaned-runner.disableCodeLens",
-						"category": "CodeLens Sample"
+						"category": "Command Runner"
 				}
 		],
 		"configuration": {
