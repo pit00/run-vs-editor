@@ -7,6 +7,7 @@ import {
   window,
 } from "vscode";
 import { CodelensProvider } from "./CodelensProvider";
+import { Terminal } from "./Terminal";
 
 let disposables: Disposable[] = [];
 
@@ -29,6 +30,7 @@ export function activate(context: ExtensionContext) {
 
   commands.registerCommand("commaned-runner.codelensAction", (args: any) => {
     window.showInformationMessage(`CodeLens action clicked with args=${args}`);
+    Terminal.run(args);
   });
 }
 

@@ -60,7 +60,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
         title: "Codelens provided by sample extension",
         tooltip: "Tooltip provided by sample extension",
         command: "commaned-runner.codelensAction",
-        arguments: ["Argument 1", false],
+        arguments: ["ls", false],
       };
       return codeLens;
     }
