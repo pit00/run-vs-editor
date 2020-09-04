@@ -4,17 +4,23 @@
   "description": "Run commands in the terminal from any file.",
   "publisher": "zvik",
   "version": "0.1.0",
-	"license": "MIT",
-	"icon": "icon.png",
+  "license": "MIT",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.48.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zvikarp/commaned-runner"
+    "url": "https://github.com/zvikarp/command-runner"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "terminal",
+    "cmd",
+    "markdown",
+    "run"
   ],
   "activationEvents": [
     "*"
