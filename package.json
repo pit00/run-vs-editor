@@ -3,7 +3,7 @@
   "displayName": "Commaned Runner",
   "description": "Run commands in the terminal from any file.",
   "publisher": "zvik",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
