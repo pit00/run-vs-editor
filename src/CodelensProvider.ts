@@ -23,7 +23,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     if (
       vscode.workspace
-        .getConfiguration("commaned-runner")
+        .getConfiguration("command-runner")
         .get("enableCodeLens", true)
     ) {
       this.codeLenses = [];
@@ -45,7 +45,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           const command: vscode.Command = {
             title: `Run \`${runText}\` in the terminal`,
             tooltip: `Run \`${run}\``,
-            command: "commaned-runner.codelensAction",
+            command: "command-runner.codelensAction",
             arguments: [run, false],
           };
           this.codeLenses.push(new vscode.CodeLens(range, command));

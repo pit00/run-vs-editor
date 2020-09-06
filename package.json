@@ -1,6 +1,6 @@
 {
-  "name": "commaned-runner",
-  "displayName": "Commaned Runner",
+  "name": "command-runner",
+  "displayName": "Command Runner",
   "description": "Run commands in the terminal from any file.",
   "publisher": "zvik",
   "version": "0.1.1",
@@ -30,18 +30,18 @@
     "commands": [
       {
         "title": "Enable",
-        "command": "commaned-runner.enableCodeLens",
+        "command": "command-runner.enableCodeLens",
         "category": "Command Runner"
       },
       {
         "title": "Disable",
-        "command": "commaned-runner.disableCodeLens",
+        "command": "command-runner.disableCodeLens",
         "category": "Command Runner"
       }
     ],
     "configuration": {
       "properties": {
-        "commaned-runner.enableCodeLens": {
+        "command-runner.enableCodeLens": {
           "type": "boolean",
           "default": true
         }

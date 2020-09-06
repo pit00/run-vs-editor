@@ -16,19 +16,19 @@ export function activate(context: ExtensionContext) {
 
   languages.registerCodeLensProvider("*", codelensProvider);
 
-  commands.registerCommand("commaned-runner.enableCodeLens", () => {
+  commands.registerCommand("command-runner.enableCodeLens", () => {
     workspace
-      .getConfiguration("commaned-runner")
+      .getConfiguration("command-runner")
       .update("enableCodeLens", true, true);
   });
 
-  commands.registerCommand("commaned-runner.disableCodeLens", () => {
+  commands.registerCommand("command-runner.disableCodeLens", () => {
     workspace
-      .getConfiguration("commaned-runner")
+      .getConfiguration("command-runner")
       .update("enableCodeLens", false, true);
   });
 
-  commands.registerCommand("commaned-runner.codelensAction", (args: any) => {
+  commands.registerCommand("command-runner.codelensAction", (args: any) => {
     Terminal.run(args);
   });
 }
