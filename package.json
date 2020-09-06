@@ -3,7 +3,7 @@
   "displayName": "Command Runner",
   "description": "Run commands in the terminal from any file.",
   "publisher": "zvik",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
