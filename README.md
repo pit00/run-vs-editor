@@ -9,7 +9,7 @@ Run VS code internal commands directly from editor by click
 ## How to Use
 
 - By default the extention is enabled, you can toggle it using the command palette. Trigger the command palette (Ctrl / Cmd + Shift + P) -> Command Runnder: Enable / Disable.
-- Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped (e.g. run `npm -V`) appears a button to execute the command, like:
+- Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped appears a button to execute the command, like:
 ```
 $> `cursorDown`
 ```
