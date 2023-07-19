@@ -7,8 +7,7 @@ import {
   window,
 } from "vscode";
 import { CodelensProvider } from "./CodelensProvider";
-import { Terminal } from "./Terminal";
-
+// import { Terminal } from "./Terminal";
 let disposables: Disposable[] = [];
 
 export function activate(context: ExtensionContext) {
@@ -16,20 +15,24 @@ export function activate(context: ExtensionContext) {
 
   languages.registerCodeLensProvider("*", codelensProvider);
 
-  commands.registerCommand("command-runner.enableCodeLens", () => {
+  commands.registerCommand("direct-cmd.enableCodeLens", () => {
     workspace
-      .getConfiguration("command-runner")
+      .getConfiguration("direct-cmd")
       .update("enableCodeLens", true, true);
   });
 
-  commands.registerCommand("command-runner.disableCodeLens", () => {
+  commands.registerCommand("direct-cmd.disableCodeLens", () => {
     workspace
-      .getConfiguration("command-runner")
+      .getConfiguration("direct-cmd")
       .update("enableCodeLens", false, true);
   });
 
-  commands.registerCommand("command-runner.codelensAction", (args: any) => {
-    Terminal.run(args);
+  commands.registerCommand("direct-cmd.codelensAction", (args: any) => {
+    // Terminal.run(args);
+    var i, arr = args.split(" ")
+    for (i = 0; i < arr.length; i++) {
+        commands.executeCommand(arr[i]);
+    }
   });
 }
 

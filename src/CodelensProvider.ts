@@ -10,7 +10,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     ._onDidChangeCodeLenses.event;
 
   constructor() {
-    this.regex = /run `(.*?)`/ig;
+    this.regex = /\$> `(.*?)`/ig;
 
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire();
@@ -23,7 +23,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     if (
       vscode.workspace
-        .getConfiguration("command-runner")
+        .getConfiguration("direct-cmd")
         .get("enableCodeLens", true)
     ) {
       this.codeLenses = [];
@@ -43,9 +43,9 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           const runText: string =
             run.length > 15 ? `${run.substring(0, 15)}...` : run;
           const command: vscode.Command = {
-            title: `Run \`${runText}\` in the terminal`,
-            tooltip: `Run \`${run}\``,
-            command: "command-runner.codelensAction",
+            title: `🧩`,//`Run \`${runText}\` in the terminal`,
+            tooltip: `Run`, // `Run \`${run}\``,
+            command: "direct-cmd.codelensAction",
             arguments: [run, false],
           };
           this.codeLenses.push(new vscode.CodeLens(range, command));

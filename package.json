@@ -1,9 +1,9 @@
 {
-  "name": "command-runner",
-  "displayName": "Command Runner",
-  "description": "Run commands in the terminal from any file.",
-  "publisher": "zvik",
-  "version": "0.1.2",
+  "name": "direct-cmd",
+  "displayName": "Direct Commands from Editor",
+  "description": "Run vs code internal commands directly from editor by click",
+  "publisher": "pit00",
+  "version": "0.0.1",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zvikarp/command-runner"
+    "url": "https://github.com/pit00/run-vs-editor"
   },
   "categories": [
     "Other"
@@ -20,7 +20,11 @@
     "terminal",
     "cmd",
     "markdown",
-    "run"
+    "run",
+    "codelens",
+    "click",
+    "mouse",
+    "cursor"
   ],
   "activationEvents": [
     "*"
@@ -30,18 +34,18 @@
     "commands": [
       {
         "title": "Enable",
-        "command": "command-runner.enableCodeLens",
+        "command": "direct-cmd.enableCodeLens",
         "category": "Command Runner"
       },
       {
         "title": "Disable",
-        "command": "command-runner.disableCodeLens",
+        "command": "direct-cmd.disableCodeLens",
         "category": "Command Runner"
       }
     ],
     "configuration": {
       "properties": {
-        "command-runner.enableCodeLens": {
+        "direct-cmd.enableCodeLens": {
           "type": "boolean",
           "default": true
         }
