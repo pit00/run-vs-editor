@@ -36,6 +36,8 @@ $> `cursorUp|cursorUp|cursorUp`
 ```
 opener("FILEPATH")
 $> `opener("C:/Folder/File.txt")`
+$> `opener("./../../../Folder/File.txt")`
+
 ```
 - Reveal at explorer alias (last slash is optional). Works with relative path
 ```
@@ -43,8 +45,8 @@ revealer("PATH")
 $> `revealer("C:/Folder/")`
 $> `revealer("C:/Folder/File.txt")`
 ```
+
 <!--⠐TODO⠂
 Add anchor (# or :)
-relative path with more depth (../../...)
 wsl/unix fix
 -->

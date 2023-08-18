@@ -46,29 +46,11 @@ export function activate(context: ExtensionContext) {
             }
             // Full path file alias
             else if (arr[i].split("opener(\"")[0] === "") {
-                let path = arr[i].split("opener(\"")[1].split("\")")[0];
-                
-                if (path.split("./")[0] === ""){
-                    let local = window.activeTextEditor?.document.uri.path;
-                    var localAux = local?.split("/");
-                    localAux?.pop();
-                    path = localAux?.join("/") + "/" + path.split("./")[1];
-                }
-                
-                commands.executeCommand("vscode.open", Uri.file(path));
+                pathFix(arr[i].split("opener(\"")[1].split("\")")[0], 1);
             }
             // Reveal path/file alias
             else if (arr[i].split("revealer(\"")[0] === "") {
-                let path = arr[i].split("revealer(\"")[1].split("\")")[0];
-                
-                if (path.split("./")[0] === ""){
-                    let local = window.activeTextEditor?.document.uri.path;
-                    var localAux = local?.split("/");
-                    localAux?.pop();
-                    path = localAux?.join("/") + "/" + path.split("./")[1];
-                }
-                
-                commands.executeCommand("revealFileInOS", Uri.file(path));
+                pathFix(arr[i].split("revealer(\"")[1].split("\")")[0], 2);
             }
             // With arguments and eval
             else if(arr[i] !== arr[i].split("]")[0]){
@@ -86,6 +68,28 @@ export function activate(context: ExtensionContext) {
             }
         }
     });
+}
+
+export function pathFix(path, type) {
+    if (path.split("./")[0] === ""){
+        let pathLen = path.split("./").length - 1;
+        
+        let local = window.activeTextEditor?.document.uri.path;
+        let localAux = local?.split("/");
+        
+        for (let i = 0; i < pathLen; i++) {
+            localAux?.pop();
+        }
+        
+        path = localAux?.join("/") + "/" + path.split("./")[pathLen];
+    }
+    
+    if(type === 1){
+        commands.executeCommand("vscode.open", Uri.file(path));
+    }
+    if(type === 2){
+        commands.executeCommand("revealFileInOS", Uri.file(path));
+    }
 }
 
 export function deactivate() {
