@@ -8,9 +8,10 @@ import {
     window,
 } from "vscode";
 import { CodelensProvider } from "./CodelensProvider";
+let disposables: Disposable[] = [];
 // import { Terminal } from "./Terminal"; // Terminal.run(args);
 const vscodeVariables = require('vscode-variables');
-let disposables: Disposable[] = [];
+import * as fs from 'fs';
 
 export function activate(context: ExtensionContext) {
     const codelensProvider = new CodelensProvider();
@@ -83,6 +84,15 @@ export function pathFix(path, type) {
         }
         
         path = localAux?.join("/") + "/" + path.split("./")[pathLen];
+    }
+    
+    // With wildcard
+    if (path.split("*").length > 1){
+        let pwd = path?.split("/");
+        let match = pwd?.pop();
+        pwd = pwd?.join("/");
+        let folders = fs.readdirSync(pwd, { withFileTypes: true }).filter(item => item.isDirectory()).map(item => item.name);
+        path = pwd + "/" + folders[folders.findIndex(element => element.includes(match.split("*")[0]))];
     }
     
     if(type === 1){
