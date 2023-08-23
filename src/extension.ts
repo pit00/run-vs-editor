@@ -9,6 +9,7 @@ import {
 } from "vscode";
 import { CodelensProvider } from "./CodelensProvider";
 // import { Terminal } from "./Terminal"; // Terminal.run(args);
+const vscodeVariables = require('vscode-variables');
 let disposables: Disposable[] = [];
 
 export function activate(context: ExtensionContext) {
@@ -30,7 +31,12 @@ export function activate(context: ExtensionContext) {
 
     commands.registerCommand("direct-cmd.codelensAction", (args: any) => {
         var i, arr = args.split("|");
-        for (i = 0; i < arr.length; i++) {
+        for(i = 0; i < arr.length; i++){
+            // With env var
+            if(arr[i].split("${").length > 1){
+                arr[i] = arr[i].replace(/\${.*?}/g, function(matched){return(vscodeVariables(matched));});
+            }
+            
             // With eval - without quotes
             if(arr[i].split("eval(")[0] === ""){
                 var cmd = arr[i].split("eval(")[1].split(")")[0];
@@ -43,27 +49,22 @@ export function activate(context: ExtensionContext) {
                     console.log("CommandService#executeCommand [LOG] " + out);
                     window.showInformationMessage(String(out));
                 }
-            }
-            // Full path file alias
-            else if (arr[i].split("opener(\"")[0] === "") {
+            } // Full path file alias
+            else if(arr[i].split("opener(\"")[0] === ""){
                 pathFix(arr[i].split("opener(\"")[1].split("\")")[0], 1);
-            }
-            // Reveal path/file alias
-            else if (arr[i].split("revealer(\"")[0] === "") {
+            } // Reveal path/file alias
+            else if(arr[i].split("revealer(\"")[0] === ""){
                 pathFix(arr[i].split("revealer(\"")[1].split("\")")[0], 2);
-            }
-            // With arguments and eval
+            } // With arguments and eval
             else if(arr[i] !== arr[i].split("]")[0]){
                 let func = arr[i].split("]")[0].split("[");
                 commands.executeCommand(func[0], eval(func[1]));
-            }
-            // With arguments
+            } // With arguments
             else if(arr[i] !== arr[i].split("\")")[0]){
                 let funcs = arr[i].split("\")")[0].split("(\"");
                 commands.executeCommand(funcs[0], funcs[1]);
-            }
-            // Common
-            else {
+            } // Common
+            else{
                 commands.executeCommand(arr[i]);
             }
         }

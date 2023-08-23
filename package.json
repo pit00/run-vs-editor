@@ -3,7 +3,7 @@
   "displayName": "Direct Commands from Editor",
   "description": "Run vs code internal commands directly from editor by click",
   "publisher": "pit00",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
@@ -72,5 +72,8 @@
     "mocha": "^10.2.0",
     "typescript": "^3.8.3",
     "vscode-test": "^1.4.0"
-  }
+    },
+    "dependencies": {
+        "vscode-variables": "^0.1.3"
+    }
 }
