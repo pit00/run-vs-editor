@@ -8,6 +8,7 @@ Run VS code internal commands directly from editor by click
 
 ## How to Use
 
+- Only tested on Windows
 - By default the extention is enabled, you can toggle it using the command palette. Trigger the command palette (Ctrl / Cmd + Shift + P) -> Command Runnder: Enable / Disable.
 - Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped appears a button to execute the command, like:
 ```
@@ -36,16 +37,23 @@ $> `cursorUp|cursorUp|cursorUp`
 ```
 opener("FILEPATH")
 $> `opener("C:/Folder/File.txt")`
-$> `opener("./../../../Folder/File.txt")`
-
 ```
-- Reveal at explorer alias (last slash is optional). Works with relative path
+- Reveal at explorer alias
 ```
 revealer("PATH")
 $> `revealer("C:/Folder/")`
 $> `revealer("C:/Folder/File.txt")`
 ```
-
+- For both reveal or open: works with relative path and wildcard (* at the end will open the closest match in case of file or folder, other cases the last slash is optional)
+```
+$> `opener("./../../../Folder/File.txt")`
+$> `revealer("C:/Users/P*")`
+```
+- Environmental variables also works (in all cases, will be substituted by the corresponding value)
+```
+$> `opener("${config:path}")`
+$> `revealer("${env:USERPROFILE}")`
+```
 <!--⠐TODO⠂
 Add anchor (# or :)
 wsl/unix fix

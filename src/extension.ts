@@ -87,12 +87,26 @@ export function pathFix(path, type) {
     }
     
     // With wildcard
-    if (path.split("*").length > 1){
+    if (path.split("*").length > 1) {
         let pwd = path?.split("/");
         let match = pwd?.pop();
         pwd = pwd?.join("/");
-        let folders = fs.readdirSync(pwd, { withFileTypes: true }).filter(item => item.isDirectory()).map(item => item.name);
-        path = pwd + "/" + folders[folders.findIndex(element => element.includes(match.split("*")[0]))];
+        
+        // Cause problems
+        if(pwd[0] === "/"){
+            pwd.replace("/", "");
+        }
+        
+        // Double slash to bypass problems
+        let files = fs.readdirSync(pwd + "/", {withFileTypes: true}).filter(item => !item.isDirectory()).map(item => item.name);
+        let partial = files[files.findIndex(element => element.includes(match.split("*")[0]))];
+        
+        if(partial === undefined){ // First check for file, then folder
+            let folders = fs.readdirSync(pwd + "/", {withFileTypes: true}).filter(item => item.isDirectory()).map(item => item.name);
+            partial = folders[folders.findIndex(element => element.includes(match.split("*")[0]))];
+        }
+        
+        path = pwd + "/" + partial;
     }
     
     if(type === 1){
