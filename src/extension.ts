@@ -56,6 +56,9 @@ export function activate(context: ExtensionContext) {
             } // Reveal path/file alias
             else if(arr[i].split("revealer(\"")[0] === ""){
                 pathFix(arr[i].split("revealer(\"")[1].split("\")")[0], 2);
+            } // Internal
+            else if (arr[i].split("vsce(\"")[0] === "") {
+                pathFix(arr[i].split("vsce(\"")[1].split("\")")[0], 3);
             } // With arguments and eval
             else if(arr[i] !== arr[i].split("]")[0]){
                 let func = arr[i].split("]")[0].split("[");
@@ -88,6 +91,10 @@ export function pathFix(path, type) {
     
     // With wildcard
     if (path.split("*").length > 1) {
+        if(type === 3){
+            path = vscodeVariables("${env:USERPROFILE}") + "/.vscode-insiders/extensions/" + path;
+        }
+        path = path.replace(/\\/g, "/");
         let pwd = path?.split("/");
         let match = pwd?.pop();
         pwd = pwd?.join("/");
@@ -114,6 +121,9 @@ export function pathFix(path, type) {
     }
     if(type === 2){
         commands.executeCommand("revealFileInOS", Uri.file(path));
+    }
+    if(type === 3){
+        commands.executeCommand("revealFileInOS", Uri.file(path + "/package.json"));
     }
 }
 
