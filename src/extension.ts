@@ -33,9 +33,16 @@ export function activate(context: ExtensionContext) {
     commands.registerCommand("direct-cmd.codelensAction", (args: any) => {
         var i, arr = args.split("|");
         for(i = 0; i < arr.length; i++){
-            // With env var
+            // With env var (VS syntax)
             if(arr[i].split("${").length > 1){
                 arr[i] = arr[i].replace(/\${.*?}/g, function(matched){return(vscodeVariables(matched));});
+            }
+            // With env var (Windows syntax)
+            if(arr[i].split("%").length > 1){
+                // /(?<=\%).*?(?=\%)/
+                arr[i] = arr[i].replace(/\%(.*?)\%/g, function(matched, group1){
+                    return(vscodeVariables("${env:" + group1 + "}"));
+                });
             }
             
             // With eval - without quotes
@@ -43,11 +50,15 @@ export function activate(context: ExtensionContext) {
                 var cmd = arr[i].split("eval(")[1].split(")")[0];
                 var out = eval(cmd);
                 if(typeof out === "object"){
-                    console.log("CommandService#executeCommand [LOG] " + Object.keys(out));
+                    console.log("CommandService#executeCommand ❯", Object.keys(out));
                     window.showInformationMessage(String(Object.keys(out)));
                 }
+                else if(typeof out === "string"){
+                    console.log("CommandService#executeCommand ❯", [out]);
+                    window.showInformationMessage(String(out));
+                }
                 else {
-                    console.log("CommandService#executeCommand [LOG] " + out);
+                    console.log("CommandService#executeCommand ❯", out);
                     window.showInformationMessage(String(out));
                 }
             } // Full path file alias
