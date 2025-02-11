@@ -1,6 +1,6 @@
 # Run VS Commands from Editor
 
-Run VS code internal commands directly from editor by click
+Run VS code internal commands directly from editor by click or hotkey
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Run VS code internal commands directly from editor by click
 
 - By default the extention is enabled, you can toggle it using the command palette. Trigger the command palette (Ctrl / Cmd + Shift + P) -> Command Runner: Enable / Disable.
 
-- Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped appears a button to execute the command, like:
+- Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped appears a button to execute the command (or run the current line or nearest cursor line by `alt+j` key), like:
 ```
 $> `cursorDown`
 ```

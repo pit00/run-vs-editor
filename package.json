@@ -3,7 +3,7 @@
   "displayName": "Direct Commands from Editor",
   "description": "Run vs code internal commands directly from editor by click",
   "publisher": "pit00",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
@@ -41,6 +41,17 @@
         "title": "Disable",
         "command": "direct-cmd.disableCodeLens",
         "category": "Command Runner"
+      },
+      {
+        "title": "Run (Nearest)",
+        "command": "direct-cmd.run",
+        "category": "Command Runner"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "direct-cmd.run",
+        "key": "alt+j"
       }
     ],
     "configuration": {
