@@ -2,6 +2,7 @@ import {
     ExtensionContext,
     languages,
     commands,
+    env,
     // Disposable,
     workspace,
     Uri,
@@ -106,6 +107,7 @@ function cmdLoop(cmds){
     
     for(let i = 0; i < cmd.length; i++){
         // cmdLoop(arr[i]);
+        // console.log("CommandService#executeCommand ❯", cmd[i]);
         
         // With env var (VS syntax)
         if(cmd[i].split("${").length > 1){
@@ -144,6 +146,11 @@ function cmdLoop(cmds){
         } // Internal
         else if (cmd[i].split("vsce(\"")[0] === "") {
             pathFix(cmd[i].split("vsce(\"")[1].split("\")")[0], 3);
+        } // Copy alias
+        else if (cmd[i].split("copy(\"")[0] === "") {
+            let cop = cmd[i].split("copy(\"")[1].split("\")")[0];
+            env.clipboard.writeText(`${cop}`);
+            window.showInformationMessage('Copied to clipboard 📎');
         } // With arguments and eval
         else if(cmd[i] !== cmd[i].split("]")[0]){
             let func = cmd[i].split("]")[0].split("[");

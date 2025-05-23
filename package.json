@@ -3,7 +3,7 @@
   "displayName": "Direct Commands from Editor",
   "description": "Run vs code internal commands directly from editor by click",
   "publisher": "pit00",
-  "version": "0.2.0",
+  "version": "0.2.4",
   "license": "MIT",
   "icon": "icon.png",
   "engines": {
