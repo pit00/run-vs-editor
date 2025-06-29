@@ -14,6 +14,10 @@ import { CodelensProvider } from "./CodelensProvider";
 // import { Terminal } from "./Terminal"; // Terminal.run(args);
 const vscodeVariables = require('vscode-variables');
 import * as fs from 'fs';
+import * as child_process from 'child_process';
+import * as os from 'os';
+// import * as pathModule from 'path';
+
 
 function selectNearest(){
     let full = window.activeTextEditor?.document.getText();
@@ -72,33 +76,61 @@ export function pathFix(path, type) {
         let pwd = path?.split("/");
         let match = pwd?.pop();
         pwd = pwd?.join("/");
-        
-        // Cause problems
-        if(pwd[0] === "/"){
-            pwd.replace("/", "");
+
+        // Find all files and folders in the directory
+        let entries = fs.readdirSync(pwd + "/", { withFileTypes: true })
+            .map(item => item.name);
+        // Find the first entry (file or folder) that matches the prefix before '*', case-insensitive
+        let searchPrefix = match.split("*")[0].toLowerCase();
+        let partial = entries.find(element => element.toLowerCase().includes(searchPrefix));
+
+        if(partial === undefined){ // If not found, check for folders
+            let folders = fs.readdirSync(pwd + "/", {withFileTypes: true})
+                .filter(item => item.isDirectory())
+                .map(item => item.name);
+            partial = folders.find(element => element.includes(match.split("*")[0]));
         }
-        
-        // Double slash to bypass problems
-        let files = fs.readdirSync(pwd + "/", {withFileTypes: true}).filter(item => !item.isDirectory()).map(item => item.name);
-        let partial = files[files.findIndex(element => element.includes(match.split("*")[0]))];
-        
-        if(partial === undefined){ // First check for file, then folder
-            let folders = fs.readdirSync(pwd + "/", {withFileTypes: true}).filter(item => item.isDirectory()).map(item => item.name);
-            partial = folders[folders.findIndex(element => element.includes(match.split("*")[0]))];
-        }
-        
-        path = pwd + "/" + partial;
+
+        // Set path to the resolved match
+        path = pwd + "/" + partial + "/";
     }
     
-    if(type === 1){
+    if(type === 1){ // file
         commands.executeCommand("vscode.open", Uri.file(path));
     }
-    if(type === 2){
-        commands.executeCommand("revealFileInOS", Uri.file(path));
+    if(type === 2 || type === 3){ // path
+        // Check if path is a file or directory
+        let stat;
+        try {
+            stat = fs.statSync(path);
+        } catch (e) {
+            // fallback if path does not exist
+            commands.executeCommand("revealFileInOS", Uri.file(path));
+            return;
+        }
+
+        if (stat.isFile()) {
+            // If it's a file, reveal the file in OS
+            commands.executeCommand("revealFileInOS", Uri.file(path));
+        } else {
+            // Cross-platform open folder directly
+            const platform = os.platform();
+            if (platform === 'win32') {
+                path = path.replace(/\//g, "\\");
+                child_process.exec(`explorer "${path}"`);
+            } else if (platform === 'darwin') {
+                child_process.exec(`open "${path}"`);
+            } else if (platform === 'linux') {
+                child_process.exec(`xdg-open "${path}"`);
+            } else {
+                // fallback to VSCode's revealFileInOS if OS is unknown
+                commands.executeCommand("revealFileInOS", Uri.file(path));
+            }
+        }
     }
-    if(type === 3){
-        commands.executeCommand("revealFileInOS", Uri.file(path + "/package.json"));
-    }
+    // if(type === 3){ // vsce
+    //     commands.executeCommand("revealFileInOS", Uri.file(path + "/package.json"));
+    // }
 }
 
 function cmdLoop(cmds){

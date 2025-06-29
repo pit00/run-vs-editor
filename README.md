@@ -69,4 +69,5 @@ $> `revealer("%APPDATA%")`
 * Add file line anchor (# or :)
 * Test eval log for improve
 * Wsl/unix fix
+* mult %USERPROFILE% problem?
 -->
