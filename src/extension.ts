@@ -16,8 +16,7 @@ const vscodeVariables = require('vscode-variables');
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import * as os from 'os';
-// import * as pathModule from 'path';
-
+import * as pathModule from 'path';
 
 function selectNearest(){
     let full = window.activeTextEditor?.document.getText();
@@ -54,43 +53,40 @@ function selectNearest(){
 }
 
 export function pathFix(path, type) {
-    if (path.split("./")[0] === ""){
-        let pathLen = path.split("./").length - 1;
-        
-        let local = window.activeTextEditor?.document.uri.path;
-        let localAux = local?.split("/");
-        
-        for (let i = 0; i < pathLen; i++) {
-            localAux?.pop();
-        }
-        
-        path = localAux?.join("/") + "/" + path.split("./")[pathLen];
+    const fileUri = window.activeTextEditor?.document.uri;
+    if (fileUri) {
+        const baseDir = pathModule.dirname(fileUri.fsPath);
+        path = pathModule.resolve(baseDir, path);
+        path = pathModule.normalize(path);
     }
     
     // With wildcard
     if (path.split("*").length > 1) {
-        if(type === 3){
-            path = vscodeVariables("${env:USERPROFILE}") + "/.vscode-insiders/extensions/" + path;
+        if (type === 3) {
+            const userProfile = vscodeVariables("${env:USERPROFILE}");
+            const baseName = pathModule.basename(path);  // <- only take last part
+            path = `${userProfile}/.vscode-insiders/extensions/${baseName}`;
+            // console.log("CommandService#executeCommandDEV ❯", path);
         }
         path = path.replace(/\\/g, "/");
         let pwd = path?.split("/");
         let match = pwd?.pop();
         pwd = pwd?.join("/");
-
+        
         // Find all files and folders in the directory
         let entries = fs.readdirSync(pwd + "/", { withFileTypes: true })
             .map(item => item.name);
         // Find the first entry (file or folder) that matches the prefix before '*', case-insensitive
         let searchPrefix = match.split("*")[0].toLowerCase();
         let partial = entries.find(element => element.toLowerCase().includes(searchPrefix));
-
+        
         if(partial === undefined){ // If not found, check for folders
             let folders = fs.readdirSync(pwd + "/", {withFileTypes: true})
                 .filter(item => item.isDirectory())
                 .map(item => item.name);
             partial = folders.find(element => element.includes(match.split("*")[0]));
         }
-
+        
         // Set path to the resolved match
         path = pwd + "/" + partial + "/";
     }
@@ -108,7 +104,7 @@ export function pathFix(path, type) {
             commands.executeCommand("revealFileInOS", Uri.file(path));
             return;
         }
-
+        
         if (stat.isFile()) {
             // If it's a file, reveal the file in OS
             commands.executeCommand("revealFileInOS", Uri.file(path));

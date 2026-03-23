@@ -1,91 +1,91 @@
 {
-  "name": "direct-cmd",
-  "displayName": "Direct Commands from Editor",
-  "description": "Run vs code internal commands directly from editor by click",
-  "publisher": "pit00",
-  "version": "0.3.1",
-  "license": "MIT",
-  "icon": "icon.png",
-  "engines": {
-    "vscode": "^1.48.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pit00/run-vs-editor"
-  },
-  "categories": [
-    "Other"
-  ],
-  "keywords": [
-    "terminal",
-    "cmd",
-    "markdown",
-    "run",
-    "codelens",
-    "click",
-    "mouse",
-    "cursor"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "title": "Enable",
-        "command": "direct-cmd.enableCodeLens",
-        "category": "Command Runner"
-      },
-      {
-        "title": "Disable",
-        "command": "direct-cmd.disableCodeLens",
-        "category": "Command Runner"
-      },
-      {
-        "title": "Run (Nearest)",
-        "command": "direct-cmd.run",
-        "category": "Command Runner"
-      }
+    "name": "direct-cmds",
+    "displayName": "Direct Commands from Editor",
+    "description": "Run vs code internal commands directly from editor by click",
+    "publisher": "pit00",
+    "version": "0.3.3",
+    "license": "MIT",
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.48.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pit00/run-vs-editor"
+    },
+    "categories": [
+        "Other"
     ],
-    "keybindings": [
-      {
-        "command": "direct-cmd.run",
-        "key": "alt+j"
-      }
+    "keywords": [
+        "terminal",
+        "cmd",
+        "markdown",
+        "run",
+        "codelens",
+        "click",
+        "mouse",
+        "cursor"
     ],
-    "configuration": {
-      "properties": {
-        "direct-cmd.enableCodeLens": {
-          "type": "boolean",
-          "default": true
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "title": "Enable",
+                "command": "direct-cmd.enableCodeLens",
+                "category": "Command Runner"
+            },
+            {
+                "title": "Disable",
+                "command": "direct-cmd.disableCodeLens",
+                "category": "Command Runner"
+            },
+            {
+                "title": "Run (Nearest)",
+                "command": "direct-cmd.run",
+                "category": "Command Runner"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "direct-cmd.run",
+                "key": "alt+j"
+            }
+        ],
+        "configuration": {
+            "properties": {
+                "direct-cmd.enableCodeLens": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
         }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.0",
-    "@types/node": "^14.0.27",
-    "@types/vscode": "1.48.0",
-    "@typescript-eslint/eslint-plugin": "^3.8.0",
-    "@typescript-eslint/parser": "^3.8.0",
-    "eslint": "^7.6.0",
-    "glob": "^7.1.6",
-    "mocha": "^10.2.0",
-    "typescript": "^3.8.3",
-    "vscode-test": "^1.4.0"
-  },
-  "dependencies": {
-    "vscode-variables": "^0.1.3"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "lint": "eslint src --ext ts",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.0.0",
+        "@types/node": "^14.0.27",
+        "@types/vscode": "1.48.0",
+        "@typescript-eslint/eslint-plugin": "^3.8.0",
+        "@typescript-eslint/parser": "^3.8.0",
+        "eslint": "^7.6.0",
+        "glob": "^7.1.6",
+        "mocha": "^10.2.0",
+        "typescript": "^3.8.3",
+        "vscode-test": "^1.4.0"
+    },
+    "dependencies": {
+        "vscode-variables": "^0.1.3"
+    },
+    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
