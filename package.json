@@ -1,9 +1,9 @@
 {
     "name": "direct-cmds",
-    "displayName": "Direct Commands from Editor",
+    "displayName": "Direct Commands at Editor",
     "description": "Run vs code internal commands directly from editor by click",
     "publisher": "pit00",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "license": "MIT",
     "icon": "icon.png",
     "engines": {
