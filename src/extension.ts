@@ -60,14 +60,14 @@ export function pathFix(path, type) {
         path = pathModule.normalize(path);
     }
     
+    if (type === 3) {
+        const userProfile = vscodeVariables("${env:USERPROFILE}");
+        const baseName = pathModule.basename(path); // <- only take last part
+        path = `${userProfile}/.vscode-insiders/extensions/${baseName}`;
+    }
+    
     // With wildcard
     if (path.split("*").length > 1) {
-        if (type === 3) {
-            const userProfile = vscodeVariables("${env:USERPROFILE}");
-            const baseName = pathModule.basename(path);  // <- only take last part
-            path = `${userProfile}/.vscode-insiders/extensions/${baseName}`;
-            // console.log("CommandService#executeCommandDEV ❯", path);
-        }
         path = path.replace(/\\/g, "/");
         let pwd = path?.split("/");
         let match = pwd?.pop();
@@ -94,6 +94,7 @@ export function pathFix(path, type) {
     if(type === 1){ // file
         commands.executeCommand("vscode.open", Uri.file(path));
     }
+    
     if(type === 2 || type === 3){ // path
         // Check if path is a file or directory
         let stat;
