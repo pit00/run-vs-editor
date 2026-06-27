@@ -1,39 +1,24 @@
-import {
-    // ExtensionContext,
-    languages,
-    commands,
-    env,
-    // Disposable,
-    Range,
-    workspace,
-    Uri,
-    window
-    // Selection
-} from "vscode";
+import * as vscode from "vscode";
 import { CodelensProvider } from "./CodelensProvider";
-// let disposables: Disposable[] = [];
-// import { Terminal } from "./Terminal"; // Terminal.run(args);
-// const vscodeVariables = require('vscode-variables');
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as pathModule from 'path';
-// import * as vscode from "vscode";
-// import * as path from "path";
-// import { log } from "console";
+import { log } from "console";
+// import { Terminal } from "./Terminal"; // Terminal.run(args);
 
 function selectNearest(){
-    let full = window.activeTextEditor?.document.getText();
+    let full = vscode.window.activeTextEditor?.document.getText();
     let runRegex = /\$> `(.*?)`/ig;
     
     let matchedLines = full!.split(/^/gm).map((v, i) => v.match(runRegex) ? i + 1 : 0).filter(a => a);
     
     // matches[0].match(/`(.*)`/)![1];
     if(matchedLines.length === 0){
-        window.showErrorMessage("Commands not found!");
+        vscode.window.showErrorMessage("Commands not found!");
     }
     else{
-        let cursorPos = window.activeTextEditor!.selection.active.line + 1;
+        let cursorPos = vscode.window.activeTextEditor!.selection.active.line + 1;
         let closest: number;
         
         if (matchedLines.includes(cursorPos)){
@@ -56,7 +41,7 @@ function selectNearest(){
 }
 
 function pathFix(path: any, type: number) {
-    const fileUri = window.activeTextEditor?.document.uri;
+    const fileUri = vscode.window.activeTextEditor?.document.uri;
     if (fileUri) {
         const baseDir = pathModule.dirname(fileUri.fsPath);
         path = pathModule.resolve(baseDir, path);
@@ -70,8 +55,8 @@ function pathFix(path: any, type: number) {
     }
     
     // With wildcard
-    // if (path.split("*").length > 1) {
     if (path.includes("*")){
+        // if (path.split("*").length > 1) {
         path = path.replace(/\\/g, "/");
         let pwd = path?.split("/");
         let match = pwd?.pop();
@@ -82,7 +67,9 @@ function pathFix(path: any, type: number) {
             .map(item => item.name);
         // Find the first entry (file or folder) that matches the prefix before '*', case-insensitive
         let searchPrefix = match.split("*")[0].toLowerCase();
-        let partial = entries.find(element => element.toLowerCase().includes(searchPrefix));
+        let partial = entries.find(element => element.toLowerCase().includes(searchPrefix)); // work beyound the prefix
+        // console.log("CommandService#executeCommandDEV ❯", entries);
+        // console.log("CommandService#executeCommandDEV ❯", partial);
         
         if(partial === undefined){ // If not found, check for folders
             let folders = fs.readdirSync(pwd + "/", {withFileTypes: true})
@@ -96,7 +83,7 @@ function pathFix(path: any, type: number) {
     }
     
     if(type === 1){ // file
-        commands.executeCommand("vscode.open", Uri.file(path));
+        vscode.commands.executeCommand("vscode.open", vscode.Uri.file(path));
     }
     
     if(type === 2 || type === 3){ // path
@@ -106,13 +93,13 @@ function pathFix(path: any, type: number) {
             stat = fs.statSync(path);
         } catch (e) {
             // fallback if path does not exist
-            commands.executeCommand("revealFileInOS", Uri.file(path));
+            vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path));
             return;
         }
         
         if (stat.isFile()) {
             // If it's a file, reveal the file in OS
-            commands.executeCommand("revealFileInOS", Uri.file(path));
+            vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path));
         } else {
             // Cross-platform open folder directly
             const platform = os.platform();
@@ -125,12 +112,12 @@ function pathFix(path: any, type: number) {
                 child_process.exec(`xdg-open "${path}"`);
             } else {
                 // fallback to VSCode's revealFileInOS if OS is unknown
-                commands.executeCommand("revealFileInOS", Uri.file(path));
+                vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path));
             }
         }
     }
     // if(type === 3){ // vsce
-    //     commands.executeCommand("revealFileInOS", Uri.file(path + "/package.json"));
+    //     vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path + "/package.json"));
     // }
 }
 
@@ -161,16 +148,16 @@ function cmdLoop(cmds: any){
             var out = eval(cmdEval);
             if(typeof out === "object"){
                 console.log("CommandService#executeCommand ❯", out);
-                window.showWarningMessage("Check console ⚠️");
-                // window.showInformationMessage(String(Object.keys(out)));
+                vscode.window.showWarningMessage("Check console");
+                // vscode.window.showInformationMessage(String(Object.keys(out)));
             }
             else if(typeof out === "string"){
                 console.log("CommandService#executeCommand ❯", [out]);
-                window.showInformationMessage(out);
+                vscode.window.showInformationMessage(out);
             }
             else {
                 console.log("CommandService#executeCommand ❯", out);
-                window.showInformationMessage(out);
+                vscode.window.showInformationMessage(String(out));
             }
         } // Full path file alias
         else if(cmd[i].split("opener(\"")[0] === ""){
@@ -184,32 +171,32 @@ function cmdLoop(cmds: any){
         } // Copy alias
         else if (cmd[i].split("copy(\"")[0] === "") {
             let cop = cmd[i].split("copy(\"")[1].split("\")")[0];
-            env.clipboard.writeText(`${cop}`);
-            window.showInformationMessage('Copied to clipboard 📎');
+            vscode.env.clipboard.writeText(`${cop}`);
+            vscode.window.showInformationMessage('Copied to clipboard 📎');
         } // With arguments and eval
         else if(cmd[i] !== cmd[i].split("]")[0]){
             let func = cmd[i].split("]")[0].split("[");
             // func[1] = func[1].replace(/vscode\./g, "vscode_1.");
-            commands.executeCommand(func[0], eval(func[1]));
+            vscode.commands.executeCommand(func[0], eval(func[1]));
         } // With arguments
         else if(cmd[i] !== cmd[i].split("\")")[0]){
             let funcs = cmd[i].split("\")")[0].split("(\"");
-            commands.executeCommand(funcs[0], funcs[1]);
+            vscode.commands.executeCommand(funcs[0], funcs[1]);
         } // Common
         else{
-            commands.executeCommand(cmd[i]);
+            vscode.commands.executeCommand(cmd[i]);
         }
     }
 }
 
 function vscodeVariables(input: string, recursive = false): string {
-    const editor = window.activeTextEditor;
+    const editor = vscode.window.activeTextEditor;
     const document = editor?.document;
     
     const absoluteFilePath = document?.uri.fsPath ?? "";
     const parsed = absoluteFilePath ? pathModule.parse(absoluteFilePath) : undefined;
     
-    const workspaces = workspace.workspaceFolders ?? [];
+    const workspaces = vscode.workspace.workspaceFolders ?? [];
     
     // Real workspace or virtual workspace (parent folder of active file)
     const virtualWorkspace = absoluteFilePath ? {
@@ -255,14 +242,14 @@ function vscodeVariables(input: string, recursive = false): string {
     output = output.replace(
         /\${selectedText}/g,
         editor
-            ? document!.getText(new Range(editor.selection.start, editor.selection.end))
+            ? document!.getText(new vscode.Range(editor.selection.start, editor.selection.end))
             : ""
     );
     
     output = output.replace(/\${env:(.*?)}/g, (_, name) => process.env[name] ?? "");
     
     output = output.replace(/\${config:(.*?)}/g, (_, name) =>
-        String(workspace.getConfiguration().get(name, ""))
+        String(vscode.workspace.getConfiguration().get(name, ""))
     );
     
     if(
@@ -278,21 +265,21 @@ function vscodeVariables(input: string, recursive = false): string {
 export function activate() {
     const codelensProvider = new CodelensProvider();
     
-    languages.registerCodeLensProvider("*", codelensProvider);
+    vscode.languages.registerCodeLensProvider("*", codelensProvider);
     
-    commands.registerCommand("direct-cmd.enableCodeLens", () => {
-        workspace.getConfiguration("direct-cmd").update("enableCodeLens", true, true);
+    vscode.commands.registerCommand("direct-cmd.enableCodeLens", () => {
+        vscode.workspace.getConfiguration("direct-cmd").update("enableCodeLens", true, true);
     });
     
-    commands.registerCommand("direct-cmd.disableCodeLens", () => {
-        workspace.getConfiguration("direct-cmd").update("enableCodeLens", false, true);
+    vscode.commands.registerCommand("direct-cmd.disableCodeLens", () => {
+        vscode.workspace.getConfiguration("direct-cmd").update("enableCodeLens", false, true);
     });
     
-    commands.registerCommand("direct-cmd.run", () => {
+    vscode.commands.registerCommand("direct-cmd.run", () => {
         selectNearest();
     });
     
-    commands.registerCommand("direct-cmd.codelensAction", (args: any) => {
+    vscode.commands.registerCommand("direct-cmd.codelensAction", (args: any) => {
         cmdLoop(args);
     });
 }

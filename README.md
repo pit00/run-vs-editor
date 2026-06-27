@@ -14,7 +14,7 @@ Run VS code internal commands directly from editor by click or hotkey
 
 ### Cmds
 
-1. Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped (between `single quotes`) appears a button to execute the command (or run the current line or nearest cursor line by `alt+j` key), like:
+1. Once it is enabled, above every line that contains the symbols `$>` followed by a code snipped (between \``backticks`\`) appears a button to execute the command (or run the current line or nearest cursor line by `alt+j` key), like:
 
 ```
 $> `cursorDown`
@@ -28,11 +28,9 @@ $> `cursorUp|cursorUp|cursorUp`
 
 3. With arguments `cmd("arg")`
 
-4. With arguments and eval ("vscode" inside eval will be converted to "vscode_1" internaly, to fix scope issues)
+4. With arguments and eval `cmd[eval("arg")]`
 
 ```
-cmd[eval("arg")]
-$> `vscode.open[vscode_1.Uri.file("C:/Folder/File.txt")]`
 $> `vscode.open[vscode.Uri.file("C:/Folder/File.txt")]`
 ```
 
@@ -40,30 +38,30 @@ $> `vscode.open[vscode.Uri.file("C:/Folder/File.txt")]`
 
 ```
 $> `eval(vscode.window.activeTextEditor.document.fileName)`
-$> `eval(vscode_1.workspace.workspaceFolders)`
+$> `eval(vscode.workspace.workspaceFolders)`
 $> `eval(1 + 2)`
 ```
 
 ### Aliases
 
-1. Open file alias. Works with relative path `opener("FILEPATH")`
+1. Open file (at VS Code) alias. Works with relative path `opener("FILEPATH")`
 
 ```
 $> `opener("C:/Folder/File.txt")`
 ```
 
-2. Reveal at explorer alias `revealer("PATH")`
+2. Reveal at explorer (path must exist and the last slash is optional) alias `revealer("PATH")`
 
 ```
 $> `revealer("C:/Folder/")`
 $> `revealer("C:/Folder/File.txt")`
 ```
 
-3. For both reveal or open: works with relative path and wildcard (* at the end will open the closest match in case of file or folder, other cases the last slash is optional)
+3. For both reveal or open: works with relative path or wildcard (* at the end will open the closest match in case of file or folder)
 
 ```
 $> `opener("./../../../Folder/File.txt")`
-$> `revealer("C:/Users/p*")`
+$> `revealer("C:/Users/lic*")`
 ```
 
 4. Environmental variables also works.
@@ -84,8 +82,11 @@ $> `copy("TEXT")`
 ```
 
 <!-- ⠐TODO⠂
+* wildcard open folder / reveal file problem ...  revealer("C:/Users/p*") vs opener("C:/Users/lic*")
+* check for file reaveal also option to open folder at vscode (like file)
+* With arguments sample
 * Add file line anchor (# or :)
-* Test eval log for improve
 * Wsl/unix fix
 * mult %USERPROFILE% problem?
+* terminal alias
 -->
