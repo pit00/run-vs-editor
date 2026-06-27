@@ -12,57 +12,75 @@ Run VS code internal commands directly from editor by click or hotkey
 
 - By default the extention is enabled, you can toggle it using the command palette. Trigger the command palette (Ctrl / Cmd + Shift + P) -> Command Runner: Enable / Disable.
 
-- Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped appears a button to execute the command (or run the current line or nearest cursor line by `alt+j` key), like:
+### Cmds
+
+1. Once it is enabled, above every line that contains the symbols '$>' followed by a code snipped (between `single quotes`) appears a button to execute the command (or run the current line or nearest cursor line by `alt+j` key), like:
+
 ```
 $> `cursorDown`
 ```
 
-- With arguments
-```
-cmd("arg")
-```
+2. Also can run multiple commands, separated by "|":
 
-- With arguments and eval ("vscode_1" for not global "vscode" commands)
-```
-cmd[eval("arg")]
-$> `vscode.open[vscode_1.Uri.file("C:/Folder/File.txt")]`
-```
-
-- Eval commands and see their values at toast notification and console log
-```
-eval(cmd)
-$> `eval(vscode_1.window.activeTextEditor.document.fileName)`
-```
-
-- Also can run multiple commands, separated by "|":
 ```
 $> `cursorUp|cursorUp|cursorUp`
 ```
 
-- Open file alias. Works with relative path
+3. With arguments `cmd("arg")`
+
+4. With arguments and eval ("vscode" inside eval will be converted to "vscode_1" internaly, to fix scope issues)
+
 ```
-opener("FILEPATH")
+cmd[eval("arg")]
+$> `vscode.open[vscode_1.Uri.file("C:/Folder/File.txt")]`
+$> `vscode.open[vscode.Uri.file("C:/Folder/File.txt")]`
+```
+
+5. Eval commands and see their values at toast notification and console log `eval(cmd)`
+
+```
+$> `eval(vscode.window.activeTextEditor.document.fileName)`
+$> `eval(vscode_1.workspace.workspaceFolders)`
+$> `eval(1 + 2)`
+```
+
+### Aliases
+
+1. Open file alias. Works with relative path `opener("FILEPATH")`
+
+```
 $> `opener("C:/Folder/File.txt")`
 ```
 
-- Reveal at explorer alias
+2. Reveal at explorer alias `revealer("PATH")`
+
 ```
-revealer("PATH")
 $> `revealer("C:/Folder/")`
 $> `revealer("C:/Folder/File.txt")`
 ```
 
-- For both reveal or open: works with relative path and wildcard (* at the end will open the closest match in case of file or folder, other cases the last slash is optional)
+3. For both reveal or open: works with relative path and wildcard (* at the end will open the closest match in case of file or folder, other cases the last slash is optional)
+
 ```
 $> `opener("./../../../Folder/File.txt")`
-$> `revealer("C:/Users/P*")`
+$> `revealer("C:/Users/p*")`
 ```
 
-- Environmental variables also works (in all cases, will be substituted by the corresponding value)
+4. Environmental variables also works.
+* VS Code: `${key:value}`
+* Win: `%var%`
+
 ```
-$> `opener("${config:path}")`
-$> `revealer("${env:USERPROFILE}")`
+$> `eval("${config:workbench.colorTheme}")`
+$> `opener("%ComSpec%")`
 $> `revealer("%APPDATA%")`
+$> `revealer("${env:USERPROFILE}")`
+```
+
+5. Copy to clipboard
+
+```
+$> `copy("TEXT")`
 ```
 
 <!-- ⠐TODO⠂

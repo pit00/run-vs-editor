@@ -1,9 +1,10 @@
 import {
-    ExtensionContext,
+    // ExtensionContext,
     languages,
     commands,
     env,
     // Disposable,
+    Range,
     workspace,
     Uri,
     window
@@ -12,11 +13,14 @@ import {
 import { CodelensProvider } from "./CodelensProvider";
 // let disposables: Disposable[] = [];
 // import { Terminal } from "./Terminal"; // Terminal.run(args);
-const vscodeVariables = require('vscode-variables');
+// const vscodeVariables = require('vscode-variables');
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as pathModule from 'path';
+// import * as vscode from "vscode";
+// import * as path from "path";
+// import { log } from "console";
 
 function selectNearest(){
     let full = window.activeTextEditor?.document.getText();
@@ -25,13 +29,12 @@ function selectNearest(){
     let matchedLines = full!.split(/^/gm).map((v, i) => v.match(runRegex) ? i + 1 : 0).filter(a => a);
     
     // matches[0].match(/`(.*)`/)![1];
-    
     if(matchedLines.length === 0){
         window.showErrorMessage("Commands not found!");
     }
     else{
         let cursorPos = window.activeTextEditor!.selection.active.line + 1;
-        let closest;
+        let closest: number;
         
         if (matchedLines.includes(cursorPos)){
             closest = cursorPos;
@@ -52,7 +55,7 @@ function selectNearest(){
     }
 }
 
-export function pathFix(path, type) {
+function pathFix(path: any, type: number) {
     const fileUri = window.activeTextEditor?.document.uri;
     if (fileUri) {
         const baseDir = pathModule.dirname(fileUri.fsPath);
@@ -67,7 +70,8 @@ export function pathFix(path, type) {
     }
     
     // With wildcard
-    if (path.split("*").length > 1) {
+    // if (path.split("*").length > 1) {
+    if (path.includes("*")){
         path = path.replace(/\\/g, "/");
         let pwd = path?.split("/");
         let match = pwd?.pop();
@@ -97,7 +101,7 @@ export function pathFix(path, type) {
     
     if(type === 2 || type === 3){ // path
         // Check if path is a file or directory
-        let stat;
+        let stat: any;
         try {
             stat = fs.statSync(path);
         } catch (e) {
@@ -130,8 +134,7 @@ export function pathFix(path, type) {
     // }
 }
 
-function cmdLoop(cmds){
-    // console.log("CommandService#executeCommandDEV ❯", cmds);
+function cmdLoop(cmds: any){
     var cmd = cmds.split("|");
     
     for(let i = 0; i < cmd.length; i++){
@@ -140,31 +143,34 @@ function cmdLoop(cmds){
         
         // With env var (VS syntax)
         if(cmd[i].split("${").length > 1){
-            cmd[i] = cmd[i].replace(/\${.*?}/g, function(matched){return(vscodeVariables(matched));});
+            cmd[i] = cmd[i].replace(/\${.*?}/g, function(matched: any){
+                return(vscodeVariables(matched));
+            });
         }
         // With env var (Windows syntax)
         if(cmd[i].split("%").length > 1){
             // /(?<=\%).*?(?=\%)/
-            cmd[i] = cmd[i].replace(/\%(.*?)\%/g, function(matched, group1){
+            cmd[i] = cmd[i].replace(/\%(.*?)\%/g, function(_: any, group1: any){
                 return(vscodeVariables("${env:" + group1 + "}"));
             });
         }
-        
         // With eval - without quotes
         if(cmd[i].split("eval(")[0] === ""){
             var cmdEval = cmd[i].split("eval(")[1].split(")")[0];
+            // cmdEval = cmdEval.replace(/vscode\./g, "vscode_1.");
             var out = eval(cmdEval);
             if(typeof out === "object"){
-                console.log("CommandService#executeCommand ❯", Object.keys(out));
-                window.showInformationMessage(String(Object.keys(out)));
+                console.log("CommandService#executeCommand ❯", out);
+                window.showWarningMessage("Check console ⚠️");
+                // window.showInformationMessage(String(Object.keys(out)));
             }
             else if(typeof out === "string"){
                 console.log("CommandService#executeCommand ❯", [out]);
-                window.showInformationMessage(String(out));
+                window.showInformationMessage(out);
             }
             else {
                 console.log("CommandService#executeCommand ❯", out);
-                window.showInformationMessage(String(out));
+                window.showInformationMessage(out);
             }
         } // Full path file alias
         else if(cmd[i].split("opener(\"")[0] === ""){
@@ -183,6 +189,7 @@ function cmdLoop(cmds){
         } // With arguments and eval
         else if(cmd[i] !== cmd[i].split("]")[0]){
             let func = cmd[i].split("]")[0].split("[");
+            // func[1] = func[1].replace(/vscode\./g, "vscode_1.");
             commands.executeCommand(func[0], eval(func[1]));
         } // With arguments
         else if(cmd[i] !== cmd[i].split("\")")[0]){
@@ -195,7 +202,80 @@ function cmdLoop(cmds){
     }
 }
 
-export function activate(context: ExtensionContext) {
+function vscodeVariables(input: string, recursive = false): string {
+    const editor = window.activeTextEditor;
+    const document = editor?.document;
+    
+    const absoluteFilePath = document?.uri.fsPath ?? "";
+    const parsed = absoluteFilePath ? pathModule.parse(absoluteFilePath) : undefined;
+    
+    const workspaces = workspace.workspaceFolders ?? [];
+    
+    // Real workspace or virtual workspace (parent folder of active file)
+    const virtualWorkspace = absoluteFilePath ? {
+        uri: {fsPath: pathModule.dirname(absoluteFilePath)},
+        name: pathModule.basename(pathModule.dirname(absoluteFilePath)),
+    } : undefined;
+    
+    let ws = workspaces[0] ?? virtualWorkspace;
+    
+    // Determine which workspace contains the file
+    let activeWorkspace = ws;
+    let relativeFile = absoluteFilePath;
+    
+    for (const ws of workspaces) {
+        if (
+            absoluteFilePath === ws.uri.fsPath ||
+            absoluteFilePath.startsWith(ws.uri.fsPath + pathModule.sep)
+        ) {
+            activeWorkspace = ws;
+            break;
+        }
+    }
+    
+    if (activeWorkspace && absoluteFilePath) {
+        relativeFile = pathModule.relative(activeWorkspace.uri.fsPath, absoluteFilePath);
+    }
+    
+    let output = input;
+    
+    output = output.replace(/\${workspaceFolder}/g, ws?.uri.fsPath ?? "");
+    output = output.replace(/\${workspaceFolderBasename}/g, ws?.name ?? "");
+    output = output.replace(/\${file}/g, absoluteFilePath);
+    output = output.replace(/\${fileWorkspaceFolder}/g, activeWorkspace?.uri.fsPath ?? "");
+    output = output.replace(/\${relativeFile}/g, relativeFile);
+    output = output.replace(/\${relativeFileDirname}/g, pathModule.dirname(relativeFile));
+    output = output.replace(/\${fileBasename}/g, parsed?.base ?? "");
+    output = output.replace(/\${fileBasenameNoExtension}/g, parsed?.name ?? "");
+    output = output.replace(/\${fileExtname}/g, parsed?.ext ?? "");
+    output = output.replace(/\${fileDirname}/g, parsed ? pathModule.basename(parsed.dir) : "");
+    output = output.replace(/\${cwd}/g, parsed?.dir ?? "");
+    output = output.replace(/\${pathSeparator}/g, pathModule.sep);
+    output = output.replace(/\${lineNumber}/g, String((editor?.selection.start.line ?? -1) + 1).replace(/^0$/, ""));
+    output = output.replace(
+        /\${selectedText}/g,
+        editor
+            ? document!.getText(new Range(editor.selection.start, editor.selection.end))
+            : ""
+    );
+    
+    output = output.replace(/\${env:(.*?)}/g, (_, name) => process.env[name] ?? "");
+    
+    output = output.replace(/\${config:(.*?)}/g, (_, name) =>
+        String(workspace.getConfiguration().get(name, ""))
+    );
+    
+    if(
+        recursive &&
+        /\${(workspaceFolder|workspaceFolderBasename|fileWorkspaceFolder|relativeFile|fileBasename|fileBasenameNoExtension|fileExtname|fileDirname|cwd|pathSeparator|lineNumber|selectedText|env:.*?|config:.*?)}/.test(output)
+    ){
+        return vscodeVariables(output, true);
+    }
+    
+    return output;
+}
+
+export function activate() {
     const codelensProvider = new CodelensProvider();
     
     languages.registerCodeLensProvider("*", codelensProvider);
