@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as pathModule from 'path';
-import { log } from "console";
+// import { log } from "console";
 // import { Terminal } from "./Terminal"; // Terminal.run(args);
 
 function selectNearest(){
@@ -68,8 +68,6 @@ function pathFix(path: any, type: number) {
         // Find the first entry (file or folder) that matches the prefix before '*', case-insensitive
         let searchPrefix = match.split("*")[0].toLowerCase();
         let partial = entries.find(element => element.toLowerCase().includes(searchPrefix)); // work beyound the prefix
-        // console.log("CommandService#executeCommandDEV ❯", entries);
-        // console.log("CommandService#executeCommandDEV ❯", partial);
         
         if(partial === undefined){ // If not found, check for folders
             let folders = fs.readdirSync(pwd + "/", {withFileTypes: true})
@@ -82,8 +80,25 @@ function pathFix(path: any, type: number) {
         path = pwd + "/" + partial + "/";
     }
     
-    if(type === 1){ // file
-        vscode.commands.executeCommand("vscode.open", vscode.Uri.file(path));
+    if (type === 1) { // file
+        let file = path;
+        let line: number | undefined;
+        
+        let match = path.match(/^(.*?)#(\d+)$/);
+        if (match) {
+            file = match[1];
+            line = Number(match[2]) - 1; // VS Code is 0-based
+        }
+        
+        let stat = fs.statSync(file);
+        
+        if (stat.isDirectory()) {
+            vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(file), true);
+        } else if (line !== undefined) {
+            vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file), {selection: new vscode.Range(line, 0, line, 0)});
+        } else {
+            vscode.commands.executeCommand("vscode.open", vscode.Uri.file(file));
+        }
     }
     
     if(type === 2 || type === 3){ // path

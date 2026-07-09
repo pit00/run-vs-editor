@@ -26,15 +26,15 @@ $> `cursorDown`
 $> `cursorUp|cursorUp|cursorUp`
 ```
 
-3. With arguments `cmd("arg")`
+<!-- 3. With arguments `cmd("arg")` -->
 
-4. With arguments and eval `cmd[eval("arg")]`
+3. With arguments + eval `cmd[eval("arg")]`
 
 ```
 $> `vscode.open[vscode.Uri.file("C:/Folder/File.txt")]`
 ```
 
-5. Eval commands and see their values at toast notification and console log `eval(cmd)`
+4. Eval commands and see their values at toast notification and console log `eval(cmd)`
 
 ```
 $> `eval(vscode.window.activeTextEditor.document.fileName)`
@@ -44,24 +44,26 @@ $> `eval(1 + 2)`
 
 ### Aliases
 
-1. Open file (at VS Code) alias. Works with relative path `opener("FILEPATH")`
+1. Open file (works with line #anchor) or folder (at VS Code) alias `opener("FILEPATH")`
 
 ```
-$> `opener("C:/Folder/File.txt")`
+$> `opener("File.txt#5")`
+$> `opener("C:/")`
 ```
 
-2. Reveal at explorer (path must exist and the last slash is optional) alias `revealer("PATH")`
+2. Reveal at explorer alias `revealer("PATH")`
 
 ```
 $> `revealer("C:/Folder/")`
 $> `revealer("C:/Folder/File.txt")`
 ```
 
-3. For both reveal or open: works with relative path or wildcard (* at the end will open the closest match in case of file or folder)
+3. For both reveal or open: path must exist, the last slash is optional, works with relative path or wildcard (* at the end will open the closest match in case of file or folder)
 
 ```
 $> `opener("./../../../Folder/File.txt")`
 $> `revealer("C:/Users/lic*")`
+$> `opener("C:/Users/Des*")`
 ```
 
 4. Environmental variables also works.
@@ -82,10 +84,6 @@ $> `copy("TEXT")`
 ```
 
 <!-- ⠐TODO⠂
-* wildcard open folder / reveal file problem ...  revealer("C:/Users/p*") vs opener("C:/Users/lic*")
-* check for file reaveal also option to open folder at vscode (like file)
-* With arguments sample
-* Add file line anchor (# or :)
 * Wsl/unix fix
 * mult %USERPROFILE% problem?
 * terminal alias
